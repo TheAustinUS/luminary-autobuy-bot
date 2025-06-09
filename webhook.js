@@ -44,7 +44,7 @@ app.post('/webhook', async (req, res) => {
       const ticketChannel = guild.channels.cache.find(c => c.name.includes(member.user.username) && c.isTextBased());
       if (!ticketChannel) return;
 
-      await ticketChannel.send(\`✅ **Payment confirmed!**\n🎁 Product: \${products[productId].name} (\${duration})\n🔑 Key: \`\`\`\${key}\`\`\`\`);
+      await ticketChannel.send(`✅ **Payment confirmed!**\n🎁 Product: ${products[productId].name} (${duration})\n🔑 Key: ${key}`);
 
       await ticketChannel.send({
         components: [{
