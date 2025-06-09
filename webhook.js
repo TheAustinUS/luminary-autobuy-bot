@@ -1,95 +1,69 @@
-
-const express = require('express');
-const app = express();
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { InteractionType, Client, GatewayIntentBits, ChannelType, PermissionsBitField } = require('discord.js');
-const bodyParser = require('body-parser');
+require('dotenv').config();
 const fs = require('fs');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const express = require('express');
+const { Client, GatewayIntentBits } = require('discord.js');
 
-app.use(bodyParser.raw({ type: 'application/json' }));
+const app = express();
+app.use(express.json());
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const PORT = process.env.PORT || 3000;
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+
+client.login(process.env.DISCORD_TOKEN);
 
 app.post('/webhook', async (req, res) => {
   const sig = req.headers['stripe-signature'];
-
   let event;
+
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
   } catch (err) {
-    console.error(`Webhook signature verification failed.`, err.message);
+    console.log('Webhook signature error:', err.message);
     return res.sendStatus(400);
   }
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const metadata = session.metadata;
-    const discordId = metadata.discord_id;
-    const product = metadata.product;
+    const userId = metadata.discord_id;
+    const productId = metadata.product;
     const duration = metadata.duration;
 
-    const config = JSON.parse(fs.readFileSync('config.json'));
-    const keys = JSON.parse(fs.readFileSync('keys.json'));
+    const keys = JSON.parse(fs.readFileSync('./keys.json', 'utf-8'));
+    const products = JSON.parse(fs.readFileSync('./products.json', 'utf-8'));
+    const keyList = keys[productId]?.[duration] || [];
 
-    const keyList = keys[product][duration];
+    if (!keyList.length) return res.sendStatus(200);
+
     const key = keyList.shift();
+    fs.writeFileSync('./keys.json', JSON.stringify(keys, null, 2));
 
-    fs.writeFileSync('keys.json', JSON.stringify(keys, null, 2));
+    client.guilds.fetch(process.env.GUILD_ID).then(async guild => {
+      const member = await guild.members.fetch(userId);
+      const ticketChannel = guild.channels.cache.find(c => c.name.includes(member.user.username) && c.isTextBased());
+      if (!ticketChannel) return;
 
-    const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers] });
-    client.once('ready', async () => {
-      const guild = await client.guilds.fetch(process.env.GUILD_ID);
-      const member = await guild.members.fetch(discordId);
-      const category = process.env.TICKET_CATEGORY_ID;
-      const channel = await guild.channels.create({
-        name: `ticket-${member.user.username}`,
-        type: ChannelType.GuildText,
-        parent: category,
-        permissionOverwrites: [
-          {
-            id: guild.roles.everyone,
-            deny: [PermissionsBitField.Flags.ViewChannel],
-          },
-          {
-            id: member.id,
-            allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
-          },
-          {
-            id: process.env.STAFF_ROLE_ID,
-            allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
-          }
-        ]
-      });
+      await ticketChannel.send(\`✅ **Payment confirmed!**\n🎁 Product: \${products[productId].name} (\${duration})\n🔑 Key: \`\`\`\${key}\`\`\`\`);
 
-      await channel.send({
-        content: `<@${member.id}>`,
-        embeds: [{
-          title: "✅ Thank you for your purchase!",
-          description: `🎁 **Product**: ${config.products[product].name} (${duration})\n🔑 **Your Key**: \`${key}\`\n\nPlease press the button below once you've copied your key.`,
-          color: 0x00ff00
-        }],
+      await ticketChannel.send({
         components: [{
           type: 1,
           components: [{
             type: 2,
+            label: '✅ I Copied My Key',
             style: 3,
-            label: "✅ I Got My Key",
-            custom_id: "close_ticket"
+            custom_id: 'close_ticket'
           }]
         }]
       });
 
       const logChannel = await guild.channels.fetch(process.env.LOG_CHANNEL_ID);
-      await logChannel.send(`🧾 **New Purchase**\n👤 <@${member.id}> (${member.id})\n📦 Product: ${config.products[product].name}\n⏳ Duration: ${duration}\n🔑 Key: \`${key}\``);
-
-      client.destroy();
+      logChannel.send(\`🧾 **Product**: \${products[productId].name}\n👤 <@${userId}>\n🔑 Key: \${key}\`);
     });
-
-    client.login(process.env.DISCORD_TOKEN);
   }
 
-  res.send();
+  res.sendStatus(200);
 });
 
-app.listen(PORT, () => console.log(`Webhook listening on port ${PORT}`));
+app.listen(process.env.PORT || 3000, () => console.log('✅ Stripe webhook listening'));
