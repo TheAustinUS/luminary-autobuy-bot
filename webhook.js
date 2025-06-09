@@ -59,7 +59,7 @@ app.post('/webhook', async (req, res) => {
       });
 
       const logChannel = await guild.channels.fetch(process.env.LOG_CHANNEL_ID);
-      logChannel.send(\`🧾 **Product**: \${products[productId].name}\n👤 <@${userId}>\n🔑 Key: \${key}\`);
+      logChannel.send(`🧾 **Product**: ${products[productId].name}\n👤 <@${userId}>\n🔑 Key: ${key}`);
     });
   }
 
