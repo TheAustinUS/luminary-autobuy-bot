@@ -1,0 +1,7 @@
+{
+  "luminary_spoofer": {
+    "weekly": ["SPOOF-WEEK-001", "SPOOF-WEEK-002"],
+    "monthly": ["SPOOF-MONTH-001", "SPOOF-MONTH-002"],
+    "lifetime": ["SPOOF-LIFE-001", "SPOOF-LIFE-002"]
+  }
+}

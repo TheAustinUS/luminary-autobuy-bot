@@ -1,0 +1,13 @@
+{
+  "products": {
+    "luminary_spoofer": {
+      "name": "Luminary Spoofer",
+      "description": "Clean, reliable spoofer for MWII/WZ2/BO6",
+      "tiers": {
+        "weekly": "price_id_weekly",
+        "monthly": "price_id_monthly",
+        "lifetime": "price_id_lifetime"
+      }
+    }
+  }
+}
