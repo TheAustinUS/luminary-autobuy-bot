@@ -1,16 +1,20 @@
 require('dotenv').config();
 const fs = require('fs');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const express = require('express');
-const { Client, GatewayIntentBits } = require('discord.js');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { Client, GatewayIntentBits, ChannelType, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }));
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers] });
 
 client.login(process.env.DISCORD_TOKEN);
+
+client.once('ready', () => {
+  console.log(`✅ Webhook bot ready as ${client.user.tag}`);
+});
 
 app.post('/webhook', async (req, res) => {
   const sig = req.headers['stripe-signature'];
@@ -19,51 +23,72 @@ app.post('/webhook', async (req, res) => {
   try {
     event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
   } catch (err) {
-    console.log('Webhook signature error:', err.message);
+    console.log('❌ Webhook error:', err.message);
     return res.sendStatus(400);
   }
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const metadata = session.metadata;
-    const userId = metadata.discord_id;
-    const productId = metadata.product;
-    const duration = metadata.duration;
+    const { discord_id, product, duration } = session.metadata;
 
     const keys = JSON.parse(fs.readFileSync('./keys.json', 'utf-8'));
     const products = JSON.parse(fs.readFileSync('./products.json', 'utf-8'));
-    const keyList = keys[productId]?.[duration] || [];
+    const productKeys = keys[product]?.[duration];
 
-    if (!keyList.length) return res.sendStatus(200);
+    if (!productKeys || !productKeys.length) return res.sendStatus(200);
 
-    const key = keyList.shift();
+    const key = productKeys.shift();
     fs.writeFileSync('./keys.json', JSON.stringify(keys, null, 2));
 
-    client.guilds.fetch(process.env.GUILD_ID).then(async guild => {
-      const member = await guild.members.fetch(userId);
-      const ticketChannel = guild.channels.cache.find(c => c.name.includes(member.user.username) && c.isTextBased());
-      if (!ticketChannel) return;
+    const guild = await client.guilds.fetch(process.env.GUILD_ID);
+    const member = await guild.members.fetch(discord_id);
 
-      await ticketChannel.send(`✅ **Payment confirmed!**\n🎁 Product: ${products[productId].name} (${duration})\n🔑 Key: ${key}`);
+    const ticketChannel = guild.channels.cache.find(
+      c => c.type === ChannelType.GuildText && c.name.includes(member.user.username)
+    );
 
-      await ticketChannel.send({
-        components: [{
-          type: 1,
-          components: [{
-            type: 2,
-            label: '✅ I Copied My Key',
-            style: 3,
-            custom_id: 'close_ticket'
-          }]
-        }]
-      });
+    if (!ticketChannel) return res.sendStatus(200);
 
-      const logChannel = await guild.channels.fetch(process.env.LOG_CHANNEL_ID);
-      logChannel.send(`🧾 **Product**: ${products[productId].name}\n👤 <@${userId}>\n🔑 Key: ${key}`);
-    });
+    const embed = {
+      title: '✅ Payment Confirmed',
+      description: `🎁 **Product**: ${products[product].name} (${duration})
+🔑 **Key:**
+\`\`\`${key}\`\`\``,
+      color: 0x00cc66
+    };
+
+    const confirmRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('close_ticket')
+        .setLabel('✅ I Copied My Key')
+        .setStyle(ButtonStyle.Success)
+    );
+
+    await ticketChannel.send({ embeds: [embed], components: [confirmRow] });
+
+    const logChannel = await guild.channels.fetch(process.env.LOG_CHANNEL_ID);
+    await logChannel.send(`🧾 **Product**: ${products[product].name}
+👤 <@${discord_id}> (${discord_id})
+🔑 Key: \`${key}\``);
   }
 
   res.sendStatus(200);
 });
 
-app.listen(process.env.PORT || 3000, () => console.log('✅ Stripe webhook listening'));
+client.on('interactionCreate', async interaction => {
+  if (interaction.isButton() && interaction.customId === 'close_ticket') {
+    await interaction.reply('👋 Thanks! This ticket will close automatically in 2 minutes.');
+
+    setTimeout(async () => {
+      try {
+        await interaction.channel.delete('Customer confirmed key received.');
+      } catch (err) {
+        console.error('❌ Error closing ticket:', err);
+      }
+    }, 120000);
+  }
+});
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log('🌐 Webhook server running');
+});
