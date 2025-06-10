@@ -1,0 +1,110 @@
+{
+  "bo6": {
+    "name": "COD: Black Ops 6",
+    "title": "🎮 COD: Black Ops 6",
+    "description": "Premium access to dominate in BO6.",
+    "color": 34816,
+    "prices": {
+      "weekly": "$19",
+      "monthly": "$29",
+      "quarterly": "$79"
+    },
+    "tiers": {
+      "weekly": "price_1RY4OLK9Wj5yz6WUyiQ8NQ8k",
+      "monthly": "price_1RY4POK9Wj5yz6WUUId2ILvU",
+      "quarterly": "price_1RY4PrK9Wj5yz6WUbgCP9ULj"
+    }
+  },
+  "afk": {
+    "name": "COD AFK Tool",
+    "title": "🛠 COD AFK Tool",
+    "description": "Automated XP farming and bot lobbies.",
+    "color": 39168,
+    "prices": {
+      "weekly": "$15",
+      "monthly": "$30"
+    },
+    "tiers": {
+      "weekly": "price_1RYGmEK9Wj5yz6WUFVB5cEAb",
+      "monthly": "price_1RY4V1K9Wj5yz6WUfRj6QWO0"
+    }
+  },
+  "spoof": {
+    "name": "Permanent Spoof",
+    "title": "🔐 Permanent Spoof",
+    "description": "Secure one-time or lifetime spoofing solution.",
+    "color": 16753920,
+    "prices": {
+      "onetime": "$30",
+      "lifetime": "$80"
+    },
+    "tiers": {
+      "onetime": "price_1RY4TTK9Wj5yz6WUPleSaC8N",
+      "lifetime": "price_1RY4U0K9Wj5yz6WUlwzHgmxc"
+    }
+  },
+  "bf2042": {
+    "name": "Battlefield 2042",
+    "title": "💣 Battlefield 2042",
+    "description": "Advanced performance for Battlefield 2042.",
+    "color": 6205741,
+    "prices": {
+      "weekly": "$19",
+      "monthly": "$29",
+      "quarterly": "$79"
+    },
+    "tiers": {
+      "weekly": "price_1RY4OLK9Wj5yz6WUyiQ8NQ8k",
+      "monthly": "price_1RY4POK9Wj5yz6WUUId2ILvU",
+      "quarterly": "price_1RY4PrK9Wj5yz6WUbgCP9ULj"
+    }
+  },
+  "r6": {
+    "name": "Rainbow Six Siege",
+    "title": "🕵️ Rainbow Six Siege",
+    "description": "Strategic advantage for Rainbow Six Siege.",
+    "color": 10170623,
+    "prices": {
+      "weekly": "$19",
+      "monthly": "$29",
+      "quarterly": "$79"
+    },
+    "tiers": {
+      "weekly": "price_1RY4OLK9Wj5yz6WUyiQ8NQ8k",
+      "monthly": "price_1RY4POK9Wj5yz6WUUId2ILvU",
+      "quarterly": "price_1RY4PrK9Wj5yz6WUbgCP9ULj"
+    }
+  },
+  "finals": {
+    "name": "The Finals",
+    "title": "🏆 The Finals",
+    "description": "Dominate in The Finals with tactical edge.",
+    "color": 16711808,
+    "prices": {
+      "weekly": "$19",
+      "monthly": "$29",
+      "quarterly": "$79"
+    },
+    "tiers": {
+      "weekly": "price_1RY4OLK9Wj5yz6WUyiQ8NQ8k",
+      "monthly": "price_1RY4POK9Wj5yz6WUUId2ILvU",
+      "quarterly": "price_1RY4PrK9Wj5yz6WUbgCP9ULj"
+    }
+  },
+  "pubg": {
+    "name": "PUBG",
+    "title": "🎯 PUBG",
+    "description": "Full-featured support for competitive PUBG.",
+    "color": 13434828,
+    "prices": {
+      "weekly": "$19",
+      "monthly": "$29",
+      "quarterly": "$79"
+    },
+    "tiers": {
+      "weekly": "price_1RY4OLK9Wj5yz6WUyiQ8NQ8k",
+      "monthly": "price_1RY4POK9Wj5yz6WUUId2ILvU",
+      "quarterly": "price_1RY4PrK9Wj5yz6WUbgCP9ULj"
+    }
+  }
+}
