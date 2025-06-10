@@ -51,9 +51,7 @@ app.post('/webhook', async (req, res) => {
 
     const embed = {
       title: '✅ Payment Confirmed',
-      description: `🎁 **Product**: ${products[product].name} (${duration})
-🔑 **Key:**
-\`\`\`${key}\`\`\``,
+      description: `🎁 **Product**: ${products[product].name} (${duration})🔑 **Key:**\`\`\`${key}\`\`\``,
       color: 0x00cc66
     };
 
