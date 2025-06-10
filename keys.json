@@ -1,7 +1,70 @@
 {
-  "luminary_spoofer": {
-    "weekly": ["SPOOF-WEEK-001", "SPOOF-WEEK-002"],
-    "monthly": ["SPOOF-MONTH-001", "SPOOF-MONTH-002"],
-    "lifetime": ["SPOOF-LIFE-001", "SPOOF-LIFE-002"]
+  "bo6": {
+    "weekly": [
+      "BO6-WEEK-KEY-001"
+    ],
+    "monthly": [
+      "BO6-MONTH-KEY-001"
+    ],
+    "quarterly": [
+      "BO6-QUARTER-KEY-001"
+    ]
+  },
+  "spoof": {
+    "onetime": [
+      "SPOOF-ONETIME-KEY-001"
+    ],
+    "lifetime": [
+      "SPOOF-LIFE-KEY-001"
+    ]
+  },
+  "bf2042": {
+    "weekly": [
+      "BF2042-WEEK-KEY-001"
+    ],
+    "monthly": [
+      "BF2042-MONTH-KEY-001"
+    ],
+    "quarterly": [
+      "BF2042-QUARTER-KEY-001"
+    ]
+  },
+  "r6": {
+    "weekly": [
+      "R6-WEEK-KEY-001"
+    ],
+    "monthly": [
+      "R6-MONTH-KEY-001"
+    ],
+    "quarterly": [
+      "R6-QUARTER-KEY-001"
+    ]
+  },
+  "finals": {
+    "weekly": [
+      "FINALS-WEEK-KEY-001"
+    ],
+    "monthly": [
+      "FINALS-MONTH-KEY-001"
+    ],
+    "quarterly": [
+      "FINALS-QUARTER-KEY-001"
+    ]
+  },
+  "pubg": {
+    "weekly": [
+      "PUBG-WEEK-KEY-001"
+    ],
+    "monthly": [
+      "PUBG-MONTH-KEY-001"
+    ],
+    "quarterly": [
+      "PUBG-QUARTER-KEY-001"
+    ]
+  },
+  "afk": {
+    "weekly": [
+      "Hawk-is-a-nigger"
+    ]
   }
 }
